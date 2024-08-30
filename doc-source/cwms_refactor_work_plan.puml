@@ -3,76 +3,74 @@
 title "Refactored OpenDCS REST API for CWMS and OpenTSDB Implementations"
 
 top to bottom direction
-rectangle OpenDCS_GitHubOrg as "OpenDCS GitHub Organization"{
-    node OpenDCS_RESTAPI_Repo as "OpenDCS REST API Repo" {
-        frame opendcs_rest_api_gradle as "org.opendcs:opendcs-rest-api" {
-            component opendcs_rest_api_jar as "opendcs-rest-api.jar"
-        }
-        frame opendcs_rest_api_sql_gradle as "org.opendcs:opendcs-rest-api-sql" {
-            component opendcs_rest_api_sql_jar as "opendcs-rest-api-sql.jar"
-        }
-        frame opendcs_rest_api_integration_gradle as "org.opendcs:opendcs-rest-api-test-harness" {
-            component opendcs_rest_api_test_harness_jar as "opendcs-rest-api-test-harness.jar"
-        }
-        frame opendcs_web_client_gradle as "org.opendcs:opendcs-web-client" {
-            component opendcs_web_client_war as "opendcs-web-client.war"
-        }
-        frame opendcs_web_client_jetty_gradle as "org.opendcs:opendcs-web-client-jetty" {
-            component opendcs_web_client_jetty as "opendcs-web-client-jetty.zip"
-        }
+node OpenDCS_RESTAPI_Repo as "OpenDCS REST API Repo" {
+    frame opendcs_rest_api_gradle as "org.opendcs:opendcs-rest-api" {
+        component opendcs_rest_api_jar as "opendcs-rest-api.jar"
+        note top of opendcs_rest_api_jar
+            DAO interfaces
+            REST API Controllers
+        end note
     }
-    node OpenDCS_RESTAPI_OPENTSDB_Repo as "OpenDCS REST API OpenTSDB Repo" {
-        frame opendcs_rest_api_opentsdb_gradle as "org.opendcs:opendcs-rest-api-opentsdb" {
-            component opendcs_rest_api_opentsdb_war as "opendcs-rest-api-opentsdb.war"
-        }
-        frame opendcs_rest_api_jetty_opentsdb_gradle as "org.opendcs:opendcs-rest-api-jetty-opentsdb" {
-            component opendcs_rest_api_opentsdb_jetty as "opendcs-rest-api-opentsdb-jetty.zip"
-        }
-        frame opendcs_rest_api_opentsdb_integration_gradle as "org.opendcs:opendcs-rest-api-opentsdb-integration-test" {
-            component test_coverage_opentsdb as "Test Coverage"
-        }
+    frame opendcs_rest_api_sql_gradle as "org.opendcs:opendcs-rest-api-sql" {
+        component opendcs_rest_api_sql_jar as "opendcs-rest-api-sql.jar"
+    }
+    frame opendcs_rest_api_integration_gradle as "org.opendcs:opendcs-rest-api-test-harness" {
+        component opendcs_rest_api_test_harness_jar as "opendcs-rest-api-test-harness.jar"
     }
 }
-
-rectangle HEC_GitHubOrg as "HEC GitHub Organization" {
-    node OpenDCS_REST_API_CWMS_Repo as "OpenDCS REST API CWMS Repo"{
-        frame opendcs_rest_api_cwms_gradle as "mil.army.usace.hec:opendcs-rest-api-cwms" {
-            component opendcs_rest_api_cwms_war as "opendcs-rest-api-cwms.war"
-        }
-        frame opendcs_rest_api_jetty_cwms_gradle as "mil.army.usace.hec:opendcs-rest-api-jetty-cwms" {
-            component opendcs_rest_api_cwms_jetty as "opendcs-rest-api-cwms-jetty.zip"
-        }
-        frame opendcs_rest_api_cwms_integration_gradle as "org.opendcs:opendcs-rest-api-cwms-integration-test" {
-            component test_coverage_cwms as "Test Coverage"
-        }
+node OpenDCS_RESTAPI_OPENTSDB_Repo as "OpenTSDB OpenDCS REST API Repo" {
+    frame opendcs_rest_api_opentsdb_gradle as "org.opendcs:opentsdb-opendcs-rest-api" {
+        component opendcs_rest_api_opentsdb_war as "opentsdb-opendcs-rest-api.war"
+    }
+    frame opendcs_rest_api_jetty_opentsdb_gradle as "org.opendcs:opendcs-rest-api-jetty-opentsdb" {
+        component opendcs_rest_api_opentsdb_jetty as "opentsdb-opendcs-rest-api-jetty.zip"
+    }
+    frame opendcs_rest_api_opentsdb_integration_gradle as "org.opendcs:opentsdb-opendcs-rest-api-integration-test" {
+        component test_coverage_opentsdb as "Test Coverage"
+    }
+}
+node OpenDCS_REST_API_CWMS_Repo as "CWMS OpenDCS REST API Repo"{
+    frame opendcs_rest_api_cwms_gradle as "mil.army.usace.hec:cwms-opendcs-rest-api" {
+        component opendcs_rest_api_cwms_war as "cwms-opendcs-rest-api.war"
+    }
+    frame opendcs_rest_api_jetty_cwms_gradle as "mil.army.usace.hec:opendcs-rest-api-jetty-cwms" {
+        component opendcs_rest_api_cwms_jetty as "cwms-opendcs-rest-api-jetty.zip"
+    }
+    frame opendcs_rest_api_cwms_integration_gradle as "mil.army.usace.hec:cwms-opendcs-rest-api-integration-test" {
+        component test_coverage_cwms as "Test Coverage"
     }
 }
 
 opendcs_rest_api_sql_jar -down[hidden]-> opendcs_rest_api_jar
 opendcs_rest_api_jar -down[hidden]-> opendcs_rest_api_integration_gradle
-opendcs_rest_api_integration_gradle -down[hidden]-> opendcs_web_client_war
+opendcs_rest_api_cwms_jetty -right[hidden]-> opendcs_rest_api_sql_jar
 
 opendcs_rest_api_cwms_jetty -down[hidden]-> opendcs_rest_api_cwms_gradle
-opendcs_rest_api_cwms_integration_gradle -down-> opendcs_rest_api_cwms_gradle
+opendcs_rest_api_cwms_integration_gradle -up-> opendcs_rest_api_cwms_gradle
 
 opendcs_rest_api_opentsdb_jetty -down[hidden]-> opendcs_rest_api_opentsdb_war
 opendcs_rest_api_opentsdb_integration_gradle -up-> opendcs_rest_api_opentsdb_war
 
 opendcs_rest_api_sql_gradle -down-> opendcs_rest_api_gradle
 
-opendcs_web_client_jetty_gradle -up-> opendcs_web_client_gradle
 opendcs_rest_api_cwms_gradle -right-> opendcs_rest_api_jar
+note on link
+  Service Loaded
+end note
 opendcs_rest_api_jetty_cwms_gradle -down-> opendcs_rest_api_cwms_gradle
-opendcs_rest_api_cwms_gradle -right-> opendcs_rest_api_sql_jar
+opendcs_rest_api_cwms_gradle -right-|> opendcs_rest_api_sql_jar
 
 opendcs_rest_api_opentsdb_gradle -right-> opendcs_rest_api_jar
-opendcs_rest_api_opentsdb_gradle -right-> opendcs_rest_api_sql_jar
+note on link
+  Service Loaded
+end note
+opendcs_rest_api_opentsdb_gradle -right--|> opendcs_rest_api_sql_jar
 opendcs_rest_api_jetty_opentsdb_gradle -down-> opendcs_rest_api_opentsdb_gradle
 
 opendcs_rest_api_integration_gradle -down-> opendcs_rest_api_gradle
 opendcs_rest_api_cwms_integration_gradle -left-> opendcs_rest_api_test_harness_jar
 opendcs_rest_api_opentsdb_integration_gradle -right-> opendcs_rest_api_test_harness_jar
-
+opendcs_rest_api_opentsdb_jetty -left[hidden]-> opendcs_rest_api_sql_jar
 
 footer "Arrows indicate dependencies.\nComponents indicate generated artifacts.\nFrames represent gradle subprojects.\nNodes represent repositories."
 @enduml
